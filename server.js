@@ -12,9 +12,11 @@ const connection = mysql.createConnection({
 
 connection.connect((err) => {
   if (err) throw err;
-  console.log('conneted as id ' + conncection.threadId);
+  console.log('connected as id' + connection.threadID);
   inqStart();
 });
+
+
 
 function inqStart() {
   inquirer
@@ -65,7 +67,7 @@ function inqStart() {
         case 'UPDATE Employee Role':
           empRoleUpdate();
           break;
-        case 'UPDATE Manager Role':
+        case 'UPDATE Employees Manager':
           mgrRoleUpdate();
           break;
         case 'DELETE Department':
@@ -100,11 +102,11 @@ function deptAdd() {
     })
     .then((answer) => {
       const query = 'INSERT INTO department (name) VALUES (?)';
-      connection.query(query, { deptName: answer.deptName }, (err, res => {
+      connection.query(query, [answer.deptName], (err, res) => {
         if (err) throw err;
         console.table(res)
         inqStart();
-      }));
+      });
   });
 };
 
@@ -129,14 +131,11 @@ function roleAdd() {
     ])
     .then((answer) => {
       const query = "INSERT INTO role (id, title, salary) VALUES ( ?, '?', ? )";
-      connection.query(
-        query,
-        { idDept: answer.idDept }, { roleTitle: answer.roleTitle }, { salary: answer.salary } (err, res => {
+      connection.query(query, [answer.idDept], [answer.roleTitle], [answer.salary], (err, res) => {
           if (err) throw err;
           console.table(res);
           inqStart();
         })
-      );
     });
 };
 
@@ -169,21 +168,20 @@ function associateAdd() {
         "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('?', '?', ?, ?);";
       connection.query(
         query,
-        { firstName: answer.firstName }
-        { lastName: answer.lastName },
-        { roleId: answer.roleId },
-        { mgrId: answer.mgrId }(err, res => {
+        [answer.firstName],
+        [answer.lastName],
+        [answer.roleId],
+        [answer.mgrId], (err, res) => {
           if (err) throw err;
           console.table(res);
           inqStart();
         })
-      );
     });
 };
 //VIEW
 function deptView() {
     const query = "SELECT * FROM department";
-    connection.query(query) (err, res => {
+    connection.query(query, (err, res) => {
         if (err) throw err;
         console.table(res);
         inqStart();
@@ -192,7 +190,7 @@ function deptView() {
 
 function roleView() {
     const query = "SELECT * FROM role";
-    connection.query(query) (err, res => {
+    connection.query(query, (err, res) => {
         if (err) throw err;
         console.table(res);
         inqStart();
@@ -201,7 +199,7 @@ function roleView() {
 
 function employeeView() {
     const query = "SELECT * FROM employee";
-    connection.query(query) (err, res => {
+    connection.query(query, (err, res) => {
         if (err) throw err;
         console.table(res);
         inqStart();
@@ -210,7 +208,7 @@ function employeeView() {
 
 function employeeManagerView() {
     const query = "SELECT * FROM employee (first_name, last_name, manager_id) VALUES ('?', '?', ?)";
-    connection.query(query) (err, res => {
+    connection.query(query, (err, res) => {
         if (err) throw err;
         console.table(res);
         inqStart();
@@ -225,15 +223,57 @@ function empRoleUpdate() {
       {
         name: 'firstName',
         type: 'input',
-        message: "Enter associate's first name:",
+        message: "Please enter your first name:",
       },
       {
         name: 'lastName',
         type: 'input',
-        message: "Enter associate's last name:",
+        message: "Enter your last name:",
       },
       {
-        name: 'roleId',
+        name: 'newRoleId',
         type: 'input',
-        message: "Enter associate's role ID:",
-}
+        message: "Enter your NEW role ID:",
+      }
+    ])
+    .then((answer) => {
+      const query = "SELECT * FROM employee; UPDATE employee SET role_id = ? WHERE first_name = '?' AND last_name = '?'";
+      connection.query(
+        query, [answer.firstName], [answer.lastName], [answer.newRoleId], (err, res) => {
+          if (err) throw err;
+          console.table(res);
+          inqStart();
+        })
+  });
+};
+
+// function mgrRoleUpdate() {
+//   inquirer
+//     .prompt([
+//       {
+//         name: 'firstName',
+//         type: 'input',
+//         message: "Please enter your first name:",
+//       },
+//       {
+//         name: 'lastName',
+//         type: 'input',
+//         message: "Enter your last name:",
+//       },
+//       {
+//         name: 'newRoleId',
+//         type: 'input',
+//         message: "Enter your NEW role ID:",
+//       }
+//     ])
+//     .then((answer) => {
+//       const query = "SELECT * FROM employee; UPDATE employee SET role_id = ? WHERE first_name = '?' AND last_name = '?'";
+//       connection.query(
+//         query, { firstName: answer.firstName }, { lastName: answer.lastName }, { newRoleId: answer.newRoleId }, (err, res => {
+//           if (err) throw err;
+//           console.table(res);
+//           inqStart();
+//         })
+//       );
+//   });
+// };
