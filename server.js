@@ -1,12 +1,13 @@
 const mysql = require('mysql');
 const inquirer = require('inquirer');
 const cTable = require('console.table');
+require('dotenv').config();
 
 const connection = mysql.createConnection({
-  host: 'localhost',
+  host: process.env.DB_HOST,
   port: 3306,
-  user: 'root',
-  password: 'jason123',
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
   database: 'associate_db',
 });
 
@@ -81,24 +82,19 @@ function inqStart() {
 //ADD
 function deptAdd() {
   inquirer
-    .prompt({
-      type: 'list',
-      message: 'Choose dept name',
-      name: 'deptName',
-      choices: [
-        'Billing',
-        'Customer Service',
-        'Information Technology',
-        'Human Resources',
-        'Research and Development',
-        'Sales',
-      ],
-    })
+    .prompt([
+      {
+        name: 'deptName',
+        type: 'input',
+        message: 'Please enter the department name',
+      },
+    ])
     .then((answer) => {
       const query = 'INSERT INTO department (name) VALUES (?)';
       connection.query(query, [answer.deptName], (err, res) => {
         if (err) throw err;
         console.table(res);
+        deptView();
         inqStart();
       });
     });
@@ -131,6 +127,7 @@ function roleAdd() {
         (err, res) => {
           if (err) throw err;
           console.table('successfully added.');
+          roleView();
           inqStart();
         }
       );
@@ -170,6 +167,7 @@ function associateAdd() {
         (err, res) => {
           if (err) throw err;
           console.table('successfully added.');
+          employeeView();
           inqStart();
         }
       );
@@ -228,6 +226,7 @@ function empRoleUpdate() {
       connection.query(query, (err, res) => {
         if (err) throw err;
         console.table('Successfully Updated.');
+        roleView();
         inqStart();
       });
     });
@@ -286,13 +285,38 @@ function employeeDelete() {
   inquirer
     .prompt([
       {
-        name: 'employeeToDelete',
+        name: 'employeeToDeleteFirstName',
+        type: 'input',
+        message: 'Please enter the First name of the associate to terminate:',
+      },
+      {
+        name: 'employeeToDeleteLastName',
+        type: 'input',
+        message: 'Please enter the last name of the associate to terminate:',
+      },
+    ])
+    .then((answer) => {
+      const query = `DELETE FROM employee WHERE first_name = "${answer.employeeToDeleteFirstName}" AND last_name = "${answer.employeetoDeleteLastName}"`;
+      connection.query(query, (err, res) => {
+        if (err) throw err;
+        console.table('Termination Successful.');
+        deptView();
+        inqStart();
+      });
+    });
+}
+
+function roleDelete() {
+  inquirer
+    .prompt([
+      {
+        name: 'roleToDelete',
         type: 'input',
         message: 'Please enter the associate to terminate:',
       },
     ])
     .then((answer) => {
-      const query = `DELETE FROM employee WHERE name = "${answer.employeeToDelete}"`;
+      const query = `DELETE FROM role WHERE title = "${answer.roleToDelete}"`;
       connection.query(query, (err, res) => {
         if (err) throw err;
         console.table('Termination Successful.');
