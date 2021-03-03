@@ -93,7 +93,7 @@ function deptAdd() {
       const query = 'INSERT INTO department (name) VALUE (?)';
       connection.query(query, [answer.deptName], (err, res) => {
         if (err) throw err;
-        console.log('Succesfully Entered.');
+        console.table('Succesfully Entered.');
       });
       inqStart();
     });
@@ -311,11 +311,11 @@ function roleDelete() {
       {
         name: 'roleToDelete',
         type: 'input',
-        message: 'Please enter the associate to terminate:',
+        message: 'Please enter the associates id to terminate:',
       },
     ])
     .then((answer) => {
-      const query = `DELETE FROM role WHERE title = "${answer.roleToDelete}"`;
+      const query = `DELETE FROM role WHERE id = "${answer.roleToDelete}"`;
       connection.query(query, (err, res) => {
         if (err) throw err;
         console.table('Termination Successful.');
@@ -323,4 +323,9 @@ function roleDelete() {
         inqStart();
       });
     });
+}
+
+function quit() {
+  console.log('Bye!');
+  connection.end();
 }
