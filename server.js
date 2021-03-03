@@ -117,16 +117,21 @@ function roleAdd() {
         type: 'input',
         message: 'Enter salary amount: (annually)',
       },
+      {
+        name: 'deptId',
+        type: 'input',
+        message: 'Enter the department ID',
+      },
     ])
     .then((answer) => {
-      const query = 'INSERT INTO role (id, title, salary) VALUES ( ?, ?, ? )';
+      const query =
+        'INSERT INTO role (id, title, salary, department_id) VALUES ( ?, ?, ?, ? )';
       connection.query(
         query,
-        [answer.idDept, answer.roleTitle, answer.salary],
+        [answer.idDept, answer.roleTitle, answer.salary, answer.deptId],
         (err, res) => {
           if (err) throw err;
           console.table('successfully added.');
-          roleView();
           inqStart();
         }
       );
@@ -162,11 +167,10 @@ function associateAdd() {
         'INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)';
       connection.query(
         query,
-        [answer.firstName, answer.lastName, answer.roleId, answer.mgrId],
+        [answer.firstName, answer.lastName, answer.roleId, answer.mgrID],
         (err, res) => {
           if (err) throw err;
-          console.table('successfully added.');
-          employeeView();
+          console.table('Successfully added.');
           inqStart();
         }
       );
@@ -225,7 +229,6 @@ function empRoleUpdate() {
       connection.query(query, (err, res) => {
         if (err) throw err;
         console.table('Successfully Updated.');
-        roleView();
         inqStart();
       });
     });
@@ -274,7 +277,6 @@ function deptDelete() {
       connection.query(query, (err, res) => {
         if (err) throw err;
         console.table('Termination Successful.');
-        deptView();
         inqStart();
       });
     });
@@ -284,22 +286,16 @@ function employeeDelete() {
   inquirer
     .prompt([
       {
-        name: 'employeeToDeleteFirstName',
+        name: 'empRoleId',
         type: 'input',
-        message: 'Please enter the First name of the associate to terminate:',
-      },
-      {
-        name: 'employeeToDeleteLastName',
-        type: 'input',
-        message: 'Please enter the last name of the associate to terminate:',
+        message: "Please enter the employee's role ID",
       },
     ])
     .then((answer) => {
-      const query = `DELETE FROM employee WHERE first_name = "${answer.employeeToDeleteFirstName}" AND last_name = "${answer.employeetoDeleteLastName}"`;
+      const query = `DELETE FROM employee WHERE role_id = "${answer.empRoleId}"`;
       connection.query(query, (err, res) => {
         if (err) throw err;
         console.table('Termination Successful.');
-        deptView();
         inqStart();
       });
     });
@@ -319,7 +315,6 @@ function roleDelete() {
       connection.query(query, (err, res) => {
         if (err) throw err;
         console.table('Termination Successful.');
-        deptView();
         inqStart();
       });
     });

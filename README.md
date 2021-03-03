@@ -42,7 +42,7 @@
 
 ## Video:
 
-- [Heroku](https://morning-retreat-28029.herokuapp.com/)
+- [Google Drive](https://morning-retreat-28029.herokuapp.com/)
 
 ## Screenshots
 
