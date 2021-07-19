@@ -1,4 +1,4 @@
-# Employee-Tracker-Pro12
+# Employee-Tracker
 
 ![License](https://img.shields.io/badge/License-MIT-blue.svg 'License Badge')
 
